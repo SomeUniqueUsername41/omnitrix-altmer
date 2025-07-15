@@ -157,42 +157,38 @@
     <textarea id="input"></textarea>
   </div>
   <script>
-    let input = document.getElementById("input");
-    let select1 = document.getElementById("select-1");
-    let output1 = document.getElementById("output-1");
-    let equationModeCheckbox = document.getElementById("equation-mode");
-    
-    function updateOutput() {
-      let inputText = input.value;
-      let select1Num = parseInt(select1.value);
-      let equationMode = equationModeCheckbox.checked;
-      
-      if (!isNaN(select1Num)) {
-        let outputText = inputText.replace(/(\d{1,3}(,\d{3})+|\b\d+\b)/g, match => {
-          let num = parseInt(match.replace(/,/g, ""));
-          if (equationMode) {
-            if (select1Num >= 0) {
-              return "(" + (num - select1Num) + " + " + select1Num + ")";
-            } else {
-              return "(" + (num + Math.abs(select1Num)) + " - " + Math.abs(select1Num) + ")";
-            }
+  let input = document.getElementById("input");
+  let select1 = document.getElementById("select-1");
+  let output1 = document.getElementById("output-1");
+  let equationModeCheckbox = document.getElementById("equation-mode");
+
+  function updateOutput() {
+    let inputText = input.value;
+    let select1Num = parseInt(select1.value);
+    let equationMode = equationModeCheckbox.checked;
+
+    if (!isNaN(select1Num)) {
+      let outputText = inputText.replace(/\b\d{4}\b/g, match => {
+        let num = parseInt(match);
+        if (equationMode) {
+          if (select1Num >= 0) {
+            return "(" + (num - select1Num) + " + " + select1Num + ")";
           } else {
-            return num - select1Num;
+            return "(" + (num + Math.abs(select1Num)) + " - " + Math.abs(select1Num) + ")";
           }
-        });
-        output1.value = equationMode ? outputText : outputText.replace(/[()]/g, '');
-      } else {
-        let outputText = inputText.replace(/(\d{1,3}(,\d{3})+|\b\d+\b)/g, match => {
-          let num = parseInt(match.replace(/,/g, ""));
-          return isNaN(num) ? match : num + select1Num;
-        });
-        output1.value = outputText;
-      }
+        } else {
+          return num - select1Num;
+        }
+      });
+      output1.value = equationMode ? outputText : outputText.replace(/[()]/g, '');
+    } else {
+      output1.value = inputText;
     }
-    
-    input.addEventListener("input", updateOutput);
-    select1.addEventListener("change", updateOutput);
-    equationModeCheckbox.addEventListener("change", updateOutput);
+  }
+
+  input.addEventListener("input", updateOutput);
+  select1.addEventListener("change", updateOutput);
+  equationModeCheckbox.addEventListener("change", updateOutput);
   </script>
 </body>
 </html>
