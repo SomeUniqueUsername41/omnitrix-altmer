@@ -156,7 +156,7 @@
     <label for="input">Enter text with year number(s):</label>
     <textarea id="input"></textarea>
   </div>
-  <script>
+<script>
 let input = document.getElementById("input");
 let select1 = document.getElementById("select-1");
 let output1 = document.getElementById("output-1");
@@ -168,18 +168,14 @@ function updateOutput() {
   let equationMode = equationModeCheckbox.checked;
 
   if (!isNaN(select1Num)) {
+    // First replace years WITH era
     let outputText = inputText.replace(/\b(\d{1,5})\s?(A\.?D\.?|B\.?C\.?|C\.?E\.?|B\.?C\.?E\.?)\b/gi, (match, yearStr, era) => {
       let year = parseInt(yearStr);
       let eraUpper = era.toUpperCase();
 
-      // Define helper for formatting with or without equation mode
       function formatResult(val, addVal, eraStr) {
         if (equationMode) {
-          if (addVal >= 0) {
-            return `(${val} ${addVal >= 0 ? '+' : '-'} ${Math.abs(addVal)}) ${eraStr}`;
-          } else {
-            return `(${val} - ${Math.abs(addVal)}) ${eraStr}`;
-          }
+          return `(${val} ${addVal >= 0 ? '+' : '-'} ${Math.abs(addVal)}) ${eraStr}`;
         } else {
           return val + ' ' + eraStr;
         }
@@ -198,7 +194,24 @@ function updateOutput() {
         return formatResult(result, -select1Num, eraUpper.includes("BCE") ? "BCE" : "BC");
       }
 
-      return match; // fallback (should not happen)
+      return match;
+    });
+
+    // Then replace years WITHOUT era (assumed AD)
+    outputText = outputText.replace(/\b(\d{1,5})\b/g, (match, yearStr) => {
+      let year = parseInt(yearStr);
+      // To avoid changing years already processed with eras, check if surrounding text has an era
+      // But since this runs after era replacements, this is safe.
+
+      let result = year - select1Num;
+      if (result === 0) return "1 BCE";
+      if (result < 0) return Math.abs(result) + " BCE";
+
+      if (equationMode) {
+        return `(${result} ${select1Num >= 0 ? '+' : '-'} ${Math.abs(select1Num)}) AD`;
+      } else {
+        return result + " AD";
+      }
     });
 
     output1.value = equationMode ? outputText : outputText.replace(/[()]/g, '');
