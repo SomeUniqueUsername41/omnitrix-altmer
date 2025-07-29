@@ -175,7 +175,8 @@ function updateOutput() {
   let equationMode = equationModeCheckbox.checked;
 
   if (!isNaN(select1Num)) {
-    let outputText = inputText.replace(/\b(\d{1,5})(?:\s?(A\.?D\.?|B\.?C\.?|C\.?E\.?|B\.?C\.?E\.?))?\b/gi, (match, yearStr, era) => {
+    // Match exactly 4-digit numbers without commas
+    let outputText = inputText.replace(/\b(\d{4})(?:\s?(A\.?D\.?|B\.?C\.?|C\.?E\.?|B\.?C\.?E\.?))?\b/gi, (match, yearStr, era) => {
       let year = parseInt(yearStr);
       let eraUpper = era ? era.toUpperCase() : null;
 
